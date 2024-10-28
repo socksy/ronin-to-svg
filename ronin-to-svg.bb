@@ -1,3 +1,4 @@
+#! /usr/bin/env bb
 (ns ronin.core
   (:require [clojure.string :as str]
             [clojure.java.io :as io]
@@ -52,7 +53,7 @@
       (format "<%s %s>%s</%s>" 
               (name tag) 
               attrs-str 
-              (str/join content)
+              (str/join (map element->str content))
               (name tag))
       (format "<%s %s/>" 
               (name tag) 
@@ -96,7 +97,10 @@
       (println "Error reading file:" (.getMessage e)))))
 
 (defn -main [& args]
-  (process-ronin-file (first args)))
+  (println (process-ronin-file (first args))))
+
+(when (= *file* (System/getProperty "babashka.file"))
+  (apply -main *command-line-args*))
 
 (comment
   ;; Direct usage
@@ -105,6 +109,7 @@
       (fill (rect 0 0 300 600) "#495057")
       (fill (circle 300 300 150) "black")
       (stroke (rect 0 0 600 600) "black" 100)))
+  (println "<svg width=\"600\" height=\"600\" xmlns=\"http://www.w3.org/2000/svg\">[:rect {:x 0, :y 0, :width 300, :height 600, :fill \"#495057\"}][:circle {:cx 300, :cy 300, :r 150, :fill \"black\"}][:rect {:x 0, :y 0, :width 600, :height 600, :stroke \"black\", :stroke-width 100}]</svg>")
   
   ;; Process from file
   (process-ronin-file "logo.ronin"))
